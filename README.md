@@ -2,9 +2,7 @@
 
 ![ci](https://github.com/mirhmousavi/Phois/actions/workflows/ci.yaml/badge.svg)
 
-
-Whois lookup behind proxy using Python
-
+Whois lookup using proxy
 
 ## Why use Phois over other libraries?
 
@@ -25,7 +23,6 @@ So why use Phois over robust libraries like [pythonwhois](https://github.com/joe
 
 7. Phois uses `chardet` library to detect encoding of whois and give you correctly utf-8 decoded result.
 
-
 ## Getting started
 
 Install dependencies
@@ -33,8 +30,6 @@ Install dependencies
 ```
 pip install phois
 ```
-
-Copy `phois` folder anywhere you want then import it.
 
 First create a `Phois` object
 
@@ -61,7 +56,6 @@ see `tests` for more examples
 
 
 ```python
-
 from phois import *
 
 # without proxy
@@ -72,8 +66,8 @@ try:
     result = p.fetch(domain='github.com',)
 except Exception as err:
     print(str(err))
-    
-    
+ 
+
 # with proxy
 try:
     proxy_info = {'proxy_type':'http','addr':'localhost', 'port':8118}
@@ -87,10 +81,7 @@ except Exception as err:
 
 - In many cases, when we query registrar whois server, we get full information but sometimes the registry whois sever gives us full information like 'php.guru', so we return both results
 
-
-
 ## Exceptions
-
 
 ```
 TldsFileError

@@ -1,7 +1,7 @@
 [project]
 name = "Phois"
 version = "0.1.0"
-description = "Whois lookup using Proxy"
+description = "Whois lookup using proxy"
 readme = "README.md"
 authors = [
     { name = "Mirhossein Mousavi", email = "mr.mousavi@live.com" }

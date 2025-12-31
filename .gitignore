@@ -1,5 +1,3 @@
-.pdm-python
-
 .venv/
 .pytest_cache/
 *.swp
