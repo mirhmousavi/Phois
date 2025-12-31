@@ -36,15 +36,15 @@ class Phois:
             `proxy_type` can be `http`,`socks4` and `socks5`
     """
 
-    tlds = []
-    tlds_file_path = ROOT_DIR + "/tlds.json"
+    tlds: dict[str, str] = dict()
+    tlds_file_path: str = ROOT_DIR + "/tlds.json"
 
-    def __init__(self, timeout=10, proxy_info=None):
+    def __init__(self, timeout: int = 10, proxy_info: dict | None = None):
         self.timeout = timeout
         self.tlds = self.load_tlds_file(self.tlds_file_path)
         self.proxy_info = proxy_info or {}
 
-    def load_tlds_file(self, path):
+    def load_tlds_file(self, path: str):
         """Load tlds from `tlds.json`."""
         try:
             return json.loads(open(path, "r").read())
@@ -54,7 +54,7 @@ class Phois:
                 % (self.tlds_file_path, str(err))
             )
 
-    def update_tlds_file(self, new_tld):
+    def update_tlds_file(self, new_tld: dict[str, str]):
         """Update `tlds.json` with new tld."""
         try:
             with open(self.tlds_file_path, "w") as f:
@@ -65,7 +65,7 @@ class Phois:
                 "can not write to file, %s,err: %s" % (self.tlds_file_path, str(err))
             )
 
-    def fetch_whois_server_for_tld_from_iana(self, tld):
+    def fetch_whois_server_for_tld_from_iana(self, tld: str):
         """When tld not found, we query iana to find the right whois server."""
         whois_server = ""
         try:
@@ -86,12 +86,12 @@ class Phois:
 
         raise NoWhoisServerFoundError("no whois server found for %s" % tld)
 
-    def find_whois_server_for_tld(self, tld):
+    def find_whois_server_for_tld(self, tld: str):
         """This method search inside `tlds.json` and if it didn't find anything, it will query `iana` to find appropriate tld."""
         result = self.tlds.get(tld) or self.fetch_whois_server_for_tld_from_iana(tld)
         return result
 
-    def fetch(self, domain, whois_server=None):
+    def fetch(self, domain: str, whois_server: str | None = None):
         """Query whois server by establishing a socket connection and get response."""
         # domain normalization
         domain = Url(domain).domain
@@ -150,13 +150,16 @@ class Phois:
 class SocketPipeline:
     """This class establish socket connection to server."""
 
-    def __init__(self, timeout=10, proxy_info=None):
+    def __init__(self, timeout: int = 10, proxy_info: dict | None = None):
         self.timeout = timeout
-        self.sanitized_proxy_info = self._sanitize_proxy_info(proxy_info)
+        if proxy_info:
+            self.sanitized_proxy_info = self._sanitize_proxy_info(proxy_info)
+        else:
+            self.sanitized_proxy_info = {}
 
-    def _sanitize_proxy_info(self, proxy_info):
+    def _sanitize_proxy_info(self, proxy_info: dict | None = None):
         sanitized_proxy_info = {
-            "proxy_type": None,
+            "proxy_type": socks.PROXY_TYPE_HTTP,
             "addr": None,
             "port": None,
             "username": None,
@@ -170,8 +173,8 @@ class SocketPipeline:
             sanitized_proxy_info["proxy_type"] = socks.SOCKS4
         elif proxy_info.get("proxy_type") == "socks5":
             sanitized_proxy_info["proxy_type"] = socks.SOCKS5
-        elif proxy_info.get("proxy_type"):
-            raise SocketBadProxyError("proxy type error")
+        else:
+            raise SocketBadProxyError(f"proxy type error: {proxy_info}")
 
         sanitized_proxy_info["addr"] = proxy_info.get("addr")
         sanitized_proxy_info["port"] = proxy_info.get("port")
@@ -179,11 +182,12 @@ class SocketPipeline:
         sanitized_proxy_info["password"] = proxy_info.get("password")
         return sanitized_proxy_info
 
-    def execute(self, query, server, port):
+    def execute(self, query: str, server: str, port: int):
         """Send query to server."""
         try:
             s = socks.socksocket()
-            s.set_proxy(**self.sanitized_proxy_info)
+            if self.sanitized_proxy_info:
+                s.set_proxy(**self.sanitized_proxy_info)
             s.settimeout(self.timeout)
             s.connect((server, port))
             s.send(query.encode("utf-8"))
@@ -198,7 +202,7 @@ class SocketPipeline:
             try:
                 decoded_result = result.decode("utf-8")
             except UnicodeDecodeError:
-                result_encoding = chardet.detect(result)["encoding"]
+                result_encoding = chardet.detect(result)["encoding"] or "utf-8"
                 decoded_result = result.decode(result_encoding)
             return decoded_result
 
@@ -218,7 +222,7 @@ class SocketPipeline:
 class Url:
     """This class is a helper class to do some common operations on urls."""
 
-    def __init__(self, url):
+    def __init__(self, url: str):
         self.url = url
         self.parsed_url = tldextract.extract(self.url)
         self.domain = self._domain()
