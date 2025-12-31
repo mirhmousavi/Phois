@@ -7,14 +7,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install deps
-        run: |
-          pip install --user uv
-          uv sync --group dev
+        run: make install
   
       - name: Lint
-        run: |
-          uv run ruff format --check
-          uv run ruff check
+        run: make lint
 
       - name: Test
-        run: uv run pytest
+        run: make test
