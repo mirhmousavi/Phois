@@ -1,7 +1,7 @@
 [project]
-name = "Pois"
+name = "mirhossein"
 version = "0.1.0"
-description = "Add your description here"
+description = "Whois lookup behind proxy using Python"
 readme = "README.md"
 authors = [
     { name = "Mirhossein Mousavi", email = "mr.mousavi@live.com" }
@@ -12,7 +12,12 @@ dependencies = [
     "pysocks>=1.7.1",
     "tldextract>=5.3.1",
 ]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
 
+[project.urls]
+HomePage = "https://github.com/mirhmousavi/Pois"
+Issues = "https://github.com/mirhmousavi/Pois/issues"
 [build-system]
 requires = ["uv_build>=0.9.18,<0.10.0"]
 build-backend = "uv_build"

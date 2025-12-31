@@ -31,8 +31,7 @@ So why use Pois over robust libraries like [pythonwhois](https://github.com/joep
 Install dependencies
 
 ```
-pip install --user pdm
-pdm install
+pip install pois
 ```
 
 Copy `pois` folder anywhere you want then import it.
