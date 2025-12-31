@@ -8,10 +8,13 @@ jobs:
 
       - name: Install deps
         run: |
-          pip install --user pdm
-          pip install -U pip
-          pdm install
+          pip install --user uv
+          uv sync --group dev
+  
       - name: Lint
-        run: pdm run lint
+        run: |
+          uv run ruff format --check
+          uv run ruff check
+
       - name: Test
-        run: pdm run test
+        run: uv run pytest
