@@ -1,33 +1,24 @@
 [project]
 name = "Pois"
 version = "0.1.0"
-description = "Pois"
-authors = [
-    {name = "mirhossein", email = "mr.mousavi@live.com"},
-]
-dependencies = [
-    "tldextract>=5.1.2",
-    "chardet>=5.2.0",
-    "PySocks>=1.7.1",
-]
-requires-python = "==3.12.*"
+description = "Add your description here"
 readme = "README.md"
-license = {text = "MIT"}
-
-
-[tool.pdm]
-distribution = false
-
-[tool.pdm.dev-dependencies]
-dev = [
-    "pytest>=8.2.2",
-    "flake8>=7.1.0",
-    "pytest-sugar>=1.0.0",
-    "black>=24.4.2",
-    "ruff>=0.5.3",
+authors = [
+    { name = "Mirhossein Mousavi", email = "mr.mousavi@live.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "chardet>=5.2.0",
+    "pysocks>=1.7.1",
+    "tldextract>=5.3.1",
 ]
 
-[tool.pdm.scripts]
-format = "ruff format"
-lint = "ruff check"
-test = "pytest"
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.14.10",
+]
