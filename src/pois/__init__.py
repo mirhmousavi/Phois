@@ -235,4 +235,3 @@ class Url:
 
     def _suffix(self):
         return self.parsed_url.suffix
-
