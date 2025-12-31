@@ -1,4 +1,4 @@
-"""Pois.
+"""Phois.
 
 A library to whois domains with proxy.
 """
@@ -25,7 +25,7 @@ from .errors import (
 ROOT_DIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
 
-class Pois:
+class Phois:
     """this class do main job for fetching whois.
 
     Attributes:

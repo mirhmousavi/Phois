@@ -1,14 +1,14 @@
-# Pois
+# Phois
 
-![ci](https://github.com/mirhmousavi/Pois/actions/workflows/ci.yaml/badge.svg)
+![ci](https://github.com/mirhmousavi/Phois/actions/workflows/ci.yaml/badge.svg)
 
 
 Whois lookup behind proxy using Python
 
 
-## Why use Pois over other libraries?
+## Why use Phois over other libraries?
 
-So why use Pois over robust libraries like [pythonwhois](https://github.com/joepie91/python-whois), [pywhois](https://bitbucket.org/richardpenman/pywhois)...
+So why use Phois over robust libraries like [pythonwhois](https://github.com/joepie91/python-whois), [pywhois](https://bitbucket.org/richardpenman/pywhois)...
 
 1. It supports idn domains.
 
@@ -23,7 +23,7 @@ So why use Pois over robust libraries like [pythonwhois](https://github.com/joep
 
 6. It parses result and if it finds a Registrar whois server, re-whois that server to get complete whois (thick whois).
 
-7. Pois uses `chardet` library to detect encoding of whois and give you correctly utf-8 decoded result.
+7. Phois uses `chardet` library to detect encoding of whois and give you correctly utf-8 decoded result.
 
 
 ## Getting started
@@ -31,16 +31,16 @@ So why use Pois over robust libraries like [pythonwhois](https://github.com/joep
 Install dependencies
 
 ```
-pip install pois
+pip install phois
 ```
 
-Copy `pois` folder anywhere you want then import it.
+Copy `phois` folder anywhere you want then import it.
 
-First create a `Pois` object
+First create a `Phois` object
 
 ```python
 
-p = Pois()
+p = Phois()
 
 ```
 
@@ -55,18 +55,18 @@ to set proxy just pass `proxy_info` dict with these arguments<br>
 
 to fetch whois of  domain just call `fetch` method, this method take two arguments, `domain` and `whois_server`
 - `domain` is the domain that you want to fetch whois of<br>
-- `whois_server` is the whois server that you want to query the domain on that server, if set to None Pois will use
+- `whois_server` is the whois server that you want to query the domain on that server, if set to None Phois will use
 the authentic whois server for that domain tld<br>
 see `tests` for more examples
 
 
 ```python
 
-from pois import *
+from phois import *
 
 # without proxy
 try:
-    p = Pois(timeout=10)
+    p = Phois(timeout=10)
     result = p.fetch(domain='github.com', whois_server='whois.verisign-grs.com')
     # or
     result = p.fetch(domain='github.com',)
@@ -77,7 +77,7 @@ except Exception as err:
 # with proxy
 try:
     proxy_info = {'proxy_type':'http','addr':'localhost', 'port':8118}
-    p = Pois(timeout=10, proxy_info=proxy_info)
+    p = Phois(timeout=10, proxy_info=proxy_info)
     result = p.fetch(domain='github.com', whois_server=None,)
 except Exception as err:
     print(str(err))

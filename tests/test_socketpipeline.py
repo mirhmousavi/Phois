@@ -1,6 +1,6 @@
 import pytest
 
-from pois import SocketPipeline, SocketError, SocketTimeoutError
+from phois import SocketPipeline, SocketError, SocketTimeoutError
 
 
 class TestSocketPipeline:

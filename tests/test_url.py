@@ -1,4 +1,4 @@
-from pois import Url
+from phois import Url
 
 
 class TestUrl:

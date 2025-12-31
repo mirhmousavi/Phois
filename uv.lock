@@ -116,7 +116,7 @@ wheels = [
 ]
 
 [[package]]
-name = "pois"
+name = "phois"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
