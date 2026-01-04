@@ -6,10 +6,6 @@ class IDNAError(PhoisError):
     pass
 
 
-class TldsFileError(PhoisError):
-    pass
-
-
 class BadDomainError(PhoisError):
     pass
 

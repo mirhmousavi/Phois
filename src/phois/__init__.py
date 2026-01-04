@@ -11,6 +11,8 @@ import socket
 import chardet
 import socks
 import tldextract
+import logging
+
 
 from .errors import (
     BadDomainError,
@@ -18,11 +20,12 @@ from .errors import (
     SocketBadProxyError,
     SocketError,
     SocketTimeoutError,
-    TldsFileError,
 )
 
 
 ROOT_DIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+
+logger = logging.getLogger(__name__)
 
 
 class Phois:
@@ -46,25 +49,14 @@ class Phois:
 
     def load_tlds_file(self, path: str):
         """Load tlds from `tlds.json`."""
-        try:
-            with open(path, "r") as f:
-                return json.load(f)
-        except json.JSONDecodeError as err:
-            raise TldsFileError(
-                "tld data file can not be load, %s, err: %s"
-                % (self.tlds_file_path, str(err))
-            )
+        with open(path, "r") as f:
+            return json.load(f)
 
     def update_tlds_file(self, new_tld: dict[str, str]):
         """Update `tlds.json` with new tld."""
-        try:
-            with open(self.tlds_file_path, "w") as f:
-                self.tlds.update(new_tld)
-                f.write(json.dumps(self.tlds, indent=4))
-        except TypeError as err:
-            raise TldsFileError(
-                "can not write to file, %s,err: %s" % (self.tlds_file_path, str(err))
-            )
+        with open(self.tlds_file_path, "w") as f:
+            self.tlds.update(new_tld)
+            f.write(json.dumps(self.tlds, indent=4))
 
     def fetch_whois_server_for_tld_from_iana(self, tld: str):
         """When tld not found, we query iana to find the right whois server."""
@@ -72,8 +64,8 @@ class Phois:
         try:
             s = SocketPipeline(proxy_info=self.proxy_info)
             result = s.execute("%s\r\n" % tld, "whois.iana.org", 43)
-        except SocketError:
-            pass
+        except SocketError as err:
+            logger.error(err)
 
         try:
             whois_server = (
@@ -82,8 +74,8 @@ class Phois:
                 .split(":")[1]
                 .strip()
             )
-        except IndexError:
-            pass
+        except IndexError as err:
+            logger.debug(err)
 
         if whois_server:
             self.update_tlds_file({tld: whois_server})
@@ -132,19 +124,21 @@ class Phois:
                 .strip()
             )
             registrar_whois_server = registrar_whois_server.strip("/\\").strip()
-        except IndexError:
+        except IndexError as err:
+            logger.debug(err)
             registrar_whois_server = None
         # sometimes Registrar WHOIS Server is present but empty like 1001mp3.biz
         # so we use the previous result
+        registrar_result = None
         if registrar_whois_server:
             try:
                 registrar_result = s.execute(
                     query="%s\r\n" % domain, server=registrar_whois_server, port=43
                 )
-            except SocketError:
+            except SocketError as err:
+                logger.debug(err)
                 registrar_result = None
-        else:
-            registrar_result = None
+
         return {
             "registry_result": registry_result,
             "registrar_result": registrar_result,
@@ -203,7 +197,8 @@ class SocketPipeline:
                 if not chunk:
                     break
 
-            # whois result encoding from some domains has problems in utf-8 so we ignore that characters, for ex whois result of `controlaltdelete.pt`
+            # whois result encoding from some domains has problems in utf-8
+            # so we ignore that characters, for ex whois result of `controlaltdelete.pt`
             try:
                 decoded_result = result.decode("utf-8")
             except UnicodeDecodeError:
