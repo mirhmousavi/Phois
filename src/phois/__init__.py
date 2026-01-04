@@ -6,7 +6,6 @@ A library to whois domains with proxy.
 import json
 import os
 import re
-import socket
 
 import chardet
 import socks
@@ -19,7 +18,6 @@ from .errors import (
     NoWhoisServerFoundError,
     SocketBadProxyError,
     SocketError,
-    SocketTimeoutError,
 )
 
 
@@ -206,11 +204,11 @@ class SocketPipeline:
                 decoded_result = result.decode(result_encoding)
             return decoded_result
 
-        except (socks.ProxyConnectionError, socket.timeout):
-            raise SocketTimeoutError(
-                "time out on quering %s for %s" % (server, query.strip())
+        except socks.ProxyError as err:
+            raise SocketBadProxyError(
+                "socket proxy error %s for %s: %s" % (server, query.strip(), err)
             )
-        except socket.gaierror as err:
+        except (OSError, TimeoutError) as err:
             raise SocketError("socket error: %s", err)
         finally:
             if s:

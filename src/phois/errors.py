@@ -18,9 +18,5 @@ class SocketError(PhoisError):
     pass
 
 
-class SocketTimeoutError(SocketError):
-    pass
-
-
 class SocketBadProxyError(SocketError):
     pass

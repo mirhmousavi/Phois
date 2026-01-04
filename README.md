@@ -34,9 +34,7 @@ pip install phois
 First create a `Phois` object
 
 ```python
-
 p = Phois()
-
 ```
 
 You can set a timeout for whois operation by passing `timeout` argument, timeout must be an integer <br>
@@ -53,7 +51,6 @@ to fetch whois of  domain just call `fetch` method, this method take two argumen
 - `whois_server` is the whois server that you want to query the domain on that server, if set to None Phois will use
 the authentic whois server for that domain tld<br>
 see `tests` for more examples
-
 
 ```python
 from phois import *
@@ -75,19 +72,15 @@ try:
     result = p.fetch(domain='github.com', whois_server=None,)
 except Exception as err:
     print(str(err))
-    
-    
 ```
 
 - In many cases, when we query registrar whois server, we get full information but sometimes the registry whois sever gives us full information like 'php.guru', so we return both results
 
 ## Exceptions
 
-```
-TldsFileError
+```bash
 BadDomainError
 NoWhoisServerFoundError
-SocketTimeoutError
 SocketError
 SocketBadProxyError
 ```

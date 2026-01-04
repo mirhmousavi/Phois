@@ -1,6 +1,6 @@
 import pytest
 
-from phois import SocketPipeline, SocketError, SocketTimeoutError
+from phois import SocketPipeline, SocketError
 
 
 def test_execute_whois_with_valid_whois_server():
@@ -25,7 +25,7 @@ def test_whois_with_bad_domain():
 
 
 def test_whois_with_low_timeout_that_raises_timeout_error():
-    with pytest.raises(SocketTimeoutError):
+    with pytest.raises(SocketError):
         SocketPipeline(timeout=1).execute(
             query="github.com", server="whois.verisign-grs.com", port=43
         )
