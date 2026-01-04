@@ -10,4 +10,4 @@ format:
 	uv run ruff format .
 
 test:
-	uv run pytest .
+	uv run pytest --capture=no .
