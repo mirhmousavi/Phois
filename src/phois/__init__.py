@@ -47,8 +47,9 @@ class Phois:
     def load_tlds_file(self, path: str):
         """Load tlds from `tlds.json`."""
         try:
-            return json.loads(open(path, "r").read())
-        except Exception as err:
+            with open(path, "r") as f:
+                return json.load(f)
+        except json.JSONDecodeError as err:
             raise TldsFileError(
                 "tld data file can not be load, %s, err: %s"
                 % (self.tlds_file_path, str(err))
@@ -60,24 +61,28 @@ class Phois:
             with open(self.tlds_file_path, "w") as f:
                 self.tlds.update(new_tld)
                 f.write(json.dumps(self.tlds, indent=4))
-        except Exception as err:
+        except TypeError as err:
             raise TldsFileError(
                 "can not write to file, %s,err: %s" % (self.tlds_file_path, str(err))
             )
 
     def fetch_whois_server_for_tld_from_iana(self, tld: str):
         """When tld not found, we query iana to find the right whois server."""
-        whois_server = ""
+        whois_server = result = ""
         try:
             s = SocketPipeline(proxy_info=self.proxy_info)
             result = s.execute("%s\r\n" % tld, "whois.iana.org", 43)
+        except SocketError:
+            pass
+
+        try:
             whois_server = (
                 (re.findall("^.*whois:.*$", result, re.MULTILINE | re.IGNORECASE))[0]
                 .strip()
                 .split(":")[1]
                 .strip()
             )
-        except Exception:
+        except IndexError:
             pass
 
         if whois_server:
@@ -127,7 +132,7 @@ class Phois:
                 .strip()
             )
             registrar_whois_server = registrar_whois_server.strip("/\\").strip()
-        except Exception:
+        except IndexError:
             registrar_whois_server = None
         # sometimes Registrar WHOIS Server is present but empty like 1001mp3.biz
         # so we use the previous result
@@ -136,9 +141,8 @@ class Phois:
                 registrar_result = s.execute(
                     query="%s\r\n" % domain, server=registrar_whois_server, port=43
                 )
-            except Exception as err:
+            except SocketError:
                 registrar_result = None
-                print(err)
         else:
             registrar_result = None
         return {
@@ -184,6 +188,7 @@ class SocketPipeline:
 
     def execute(self, query: str, server: str, port: int):
         """Send query to server."""
+        s = None
         try:
             s = socks.socksocket()
             if self.sanitized_proxy_info:
@@ -210,13 +215,11 @@ class SocketPipeline:
             raise SocketTimeoutError(
                 "time out on quering %s for %s" % (server, query.strip())
             )
-        except Exception as err:
-            raise SocketError(
-                "error on quering %s for %s, err: %s"
-                % (server, query.strip(), str(err))
-            )
+        except socket.gaierror as err:
+            raise SocketError("socket error: %s", err)
         finally:
-            s.close()
+            if s:
+                s.close()
 
 
 class Url:

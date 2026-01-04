@@ -17,7 +17,7 @@ def test_execute_whois_with_bad_whois_server():
         )
 
 
-def test_execute_whois_with_bad_domain():
+def test_whois_with_bad_domain():
     with pytest.raises(SocketError):
         SocketPipeline().execute(
             query="github\r\n", server="7465.whois-servers.net", port=43

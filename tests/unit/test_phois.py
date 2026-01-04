@@ -57,6 +57,11 @@ def test_fetch_whois_valid_domain_with_proxy(mock_socket_pipeline_class):
 def test_fetch_whois_valid_domain_with_defined_whois_server(
     mock_socket_pipeline_class,
 ):
+    with open(
+        "tests/artifacts/github.com_registry.txt", "r", encoding="ISO-8859-9"
+    ) as f:
+        mock_socket_pipeline_class.return_value.execute.return_value = f.read()
+
     result = Phois().fetch(domain="github.com", whois_server="whois.verisign-grs.com")[
         "registry_result"
     ]
