@@ -8,12 +8,6 @@ from unittest.mock import patch
 from phois.errors import BadDomainError
 
 
-def test_real_fetch_whois_of_valid_domain():
-    result = Phois().fetch(domain="github.com")
-    assert result["registry_result"]
-    assert result["registrar_result"]
-
-
 @patch("phois.SocketPipeline")
 def test_fetch_whois_of_valid_domain(mock_socket_pipeline_class):
     ret = []
